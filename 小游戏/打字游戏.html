@@ -1,0 +1,127 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        #conatiner{
+            width:400px;
+            height:500px;
+            border:1px solid #eee;
+            position: relative;
+        }
+    </style>
+</head>
+    <body>
+        <span>typing</span>
+        <div>
+             <span id="score">0</span>得分 ; 
+             需要：<span id="need"></span>分；
+        </div>
+        <div id="conatiner">
+            
+        </div>
+        <button id="start">开始游戏</button>
+    </body>
+    <script>
+        var eConatiner = document.getElementById("conatiner");
+        var eScore = document.getElementById("score");
+        var getRandom = function() {
+            //随即一个97到122的字符;
+            var charCode = 97+Math.floor(Math.random()*26);
+            var speed = Math.ceil(Math.random()*4);
+            return {
+                code : String.fromCharCode(charCode),
+                speed : speed,
+                y : 0,
+                x  : Math.floor(Math.random()*390),
+            }
+        };
+
+        function Game( n , score , eConatiner, eScore ,need) {
+            this.need = need;
+            this.need.innerHTML = score;
+            this.showArr = []; //字符对象的列表
+            this.shoted = 0;
+            this.n = n;
+            this.score = score;
+            this.eConatiner = eConatiner;
+            this.eScore = eScore;
+            this.events();
+            this.run();
+            this.timer = setInterval(this.run.bind(this), Game.gamePad[n].speed);
+        }
+        Game.gamePad = {
+            1 : {
+                speed : 100
+            },
+            2 : {
+                speed : 90
+            },
+            3 : {
+                speed : 70
+            },
+            4 : {
+                speed : 40
+            },
+            5 : {
+                speed : 20
+            }
+        }
+        Game.prototype.keyup = function(ev) {
+            showArr = this.showArr;
+            for(var i=0 ;i < showArr.length; i++) {
+                if(showArr[i].code === ev.key || String.fromCharCode(ev.keyCode).toLowerCase() == showArr[i].code) {
+                    showArr.splice(i,1);
+                    this.shoted++;
+                    this.eScore.innerHTML = this.shoted;
+                    if(this.shoted === this.score && Game.gamePad[this.n+1] === undefined) {
+                        alert("少侠你好厉害， 你好快， 真的好快好快的");
+                    }else if(this.shoted === this.score) {
+                        this.unbind();
+                        alert("进入下一关");
+                        new Game(this.n+1, this.score+10, this.eConatiner, this.eScore, this.need);
+                    }
+                    return;
+                }
+            }
+        }
+        Game.prototype.events = function() {
+            this.keyup = this.keyup.bind(this);
+            window.addEventListener("keyup", this.keyup);
+        }
+        Game.prototype.unbind = function() {
+            clearInterval(this.timer);
+            window.removeEventListener("keyup", this.keyup);
+        }
+        //随机一个字符对象， 包含了字符的运动速度，字符的值
+        //让showArr这个数组的数据运动;
+        Game.prototype.run = function(){
+            showArr = this.showArr;
+            //随机生成字符对象
+            if(Math.random()>0.9) {
+                var obj = getRandom();
+                showArr.push(obj);
+            }
+            //让元素运动
+            for(var i=0 ;i < showArr.length; i++) {
+                showArr[i].y+=showArr[i].speed;
+                if(showArr[i].y>500) {
+                    alert("游戏失败");
+                    location.reload();
+                }
+            }
+            this.eConatiner.innerHTML = "";
+            //让元素添加到界面中;
+            for(var i=0 ;i < showArr.length; i++) {
+                var eSpan = document.createElement("span");
+                eSpan.style.position = "absolute";
+                eSpan.innerHTML = showArr[i].code;
+                eSpan.style.left = showArr[i].x;
+                eSpan.style.top = showArr[i].y;
+                this.eConatiner.appendChild(eSpan);
+            }
+        }
+        document.getElementById("start").addEventListener("click", function() {
+            new Game(1, 10, eConatiner, eScore, document.getElementById("need"));
+        });
+    </script>
+</html>
