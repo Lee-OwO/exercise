@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<script type="text/javascript">
+		function selectFrom(lowerValue,upperValue){
+			var choices = upperValue - lowerValue + 1;
+			return Math.floor(Math.random()*choices + lowerValue);
+		}
+
+		var num = selectFrom(2,10);
+		alert(num);
+
+		var colors = ["red","green","blue","yellow","black","brown"];
+		var color = colors[selectFrom(0,colors.length - 1)];
+		alert(color); 
+	</script>
+</head>
+<body>
+	
+</body>
+</html>
