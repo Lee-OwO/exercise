@@ -3,22 +3,200 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Creative Link Effects</title>
-	<style type="text/css" media="screen">
+	<link rel="shortcut icon" href="https://tympanus.net/Development/favicon.ico">
+	<style type="text/scss" media="screen">
+		body, html, *:before, *:after {
+			margin: 0;
+			padding: 0;
+		}
 		section {
-			height: 400px;
+			padding: 10em 3em;
+			text-align: center;
+			nav {
+				display: block;
+				a {
+					display: inline-block;
+					margin: 20px 20px;
+					font-size: 22px;
+					line-height: 22px;
+					color: #fff;
+					text-decoration: none;
+				}
+			}
+		}
+		/* 1---upupupupupupuppupupupupupupupupupupupupupupupupupupupupupupup*/
+		.num-1 {
 			background-color: #435a6b;
+			a {
+				&:before, &:after {
+					display: inline-block;
+					opacity: 0;
+					transition: all 0.5s;
+				}
+				&:before {
+					vertical-align: 2px;
+					margin-right: 10px;
+					transform: translateX(20px);
+					content: "["
+				}
+				&:after {
+					vertical-align: 2px;
+					margin-left: 10px;
+					transform: translateX(-20px);
+					content: "]"
+				}
+				&:hover:before, &:hover:after {
+					transform: translateX(0);
+					opacity: 1;
+				}
+			}
+		}
+		/* 2---upupupupupupuppupupupupupupupupupupupupupupupupupupupupupupup*/
+		.num-2 {
+			background-color: #0e83cd;
+			a {
+				transform-style: preserve-3d;
+				transform-origin: 50% 50% 24px;
+				position: relative;
+				padding: 14px;
+				background-color: #2195de;
+				transition: all 0.2s;
+				span {
+					position: absolute;
+					top: 100%;
+					left: 0;
+					display: inline-block;
+					padding: 14px;
+					transform-style: preserve-3d;
+					transform-origin: 50% 0;
+					transform: rotateX( 90deg);
+					background-color: #0965a0;
+					transition: all 0.1s;
+				}
+				&:hover {
+					transform: rotateX( -90deg);
+					span {
+						background-color: #28a2ee;
+					}
+				}
+			}
+		}
+		/* 3---upupupupupupuppupupupupupupupupupupupupupupupupupupupupupupup*/
+		.num-3 {
+			background-color: #f19f0f;
+			a {
+				position: relative;
+				&:after {
+					display: block;
+					height: 4px;
+					background-color: rgba(0, 0, 0, 0.1);
+					content: "";
+					opacity: 0;
+					transform: translateY( 24px);
+					transition: all 0.3s;
+				}
+				&:hover:after {
+					opacity: 1;
+					transform: translateY( 14px);
+				}
+			}
+		}
+		/* 4---upupupupupupuppupupupupupupupupupupupupupupupupupupupupupupup*/
+		.num-4 {
+			background-color: #3fa46a;
+			a {
+				position: relative;
+				&:after {
+					display: block;
+					height: 4px;
+					background-color: #fff;
+					content: "";
+					opacity: 0;
+					transform: translateY( 2px) rotateX(90deg);
+					transition: all 0.3s;
+				}
+				&:hover:after {
+					opacity: 1;
+					height: 4px;
+					transform: translateY( 14px) rotateX(0deg);
+				}
+			}
+		}
+		/* 5---upupupupupupuppupupupupupupupupupupupupupupupupupupupupupupup*/
+		.num-5 {
+			background-color: blue;
+			padding: 110px 50px;
+			a {
+				box-sizing: border-box;
+				display: inline-block;
+				margin: 20px;
+				width: 250px;
+				height: 40px;
+				line-height: 40px;
+				vertical-align: middle;
+				-webkit-background-clip: text;
+			    xbackground-image: -webkit-linear-gradient(left top, #ace, #f96);
+			    background-image:url(./textaaa.jpeg);
+			    -webkit-background-size: 1000px 50px;
+			    background-size: 1000px 50px;
+				color: transparent;
+				transition: font-weight,font-size 0.4s ,background-position 15s;
+				&:hover {
+					font-size: 30px;
+					font-weight: 700;
+					background-position: -10000px ;
+					xtransition: background-position 8s;
+				}
+			}
 		}
 	</style>
 </head>
 <body>	
 	<section class="num-1">
-		<nav>
-			<a href="#">REMREBER</a>
-			<a href="#">MEMORY</a>
-			<a href="#">COLOR</a>
-			<a href="#">CIRCUMSTANCE</a>
-			<a href="#">EVERYONE</a>
+		<nav id="n1">
+			<a href="#n2">REMREBER</a>
+			<a href="#n2">MEMORY</a>
+			<a href="#n2">COLOR</a>
+			<a href="#n2">CIRCUMSTANCE</a>
+			<a href="#n2">EVERYONE</a>
+		</nav>
+	</section>
+	<section class="num-2">
+		<nav id="n2">
+			<a href="#n3">REMREBER<span data="REMREBER">REMREBER</span></a>
+			<a href="#n3">MEMORY<span data="MEMORY">MEMORY</span></a>
+			<a href="#n3">COLOR<span data="COLOR">COLOR</span></a>
+			<a href="#n3">CIRCUMSTANCE<span data="CIRCUMSTANCE">CIRCUMSTANCE</span></a>
+			<a href="#n3">EVERYONE<span data="EVERYONE">EVERYONE</span></a>
+		</nav>
+	</section>
+	<section class="num-3">
+		<nav id="n3">
+			<a href="#n4">REMREBER</a>
+			<a href="#n4">MEMORY</a>
+			<a href="#n4">COLOR</a>
+			<a href="#n4">CIRCUMSTANCE</a>
+			<a href="#n4">EVERYONE</a>
+		</nav>
+	</section>
+	<section class="num-4">
+		<nav id="n4">
+			<a href="#n5">REMREBER</a>
+			<a href="#n5">MEMORY</a>
+			<a href="#n5">COLOR</a>
+			<a href="#n5">CIRCUMSTANCE</a>
+			<a href="#n5">EVERYONE</a>
+		</nav>
+	</section>
+	<section class="num-5">
+		<nav id="n5">
+			<a href="#n6">REMREBER</a>
+			<a href="#n6">MEMORY</a>
+			<a href="#n6">COLOR</a>
+			<a href="#n6">CIRCUMSTANCE</a>
+			<a href="#n6">EVERYONE</a>
 		</nav>
 	</section>
 </body>
+<script src="sass.link.min.js"></script>
 </html>
