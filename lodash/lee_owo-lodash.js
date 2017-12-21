@@ -94,6 +94,7 @@ var lee_owo = {
 				if (comparator(nArr[i], fliter[j])) {
 					nArr.splice(i, 1);
 					i--;
+					break;
 				}
 			}
 		}
@@ -323,6 +324,78 @@ var lee_owo = {
 				arr.splice(i,1);
 				i--;
 			}
+		}
+		return arr;
+	},
+	/**
+	 * Removes all values of val from array
+	 * @param  {Array} arr [The array to modify]
+	 * @param  {Array} val [the  values to remove]
+	 * @return {Array}     [Returns array]
+	 */
+	pullAll: function(arr, val) {
+		for (let i = 0; i < arr.length; i++) {
+			if (val.indexOf(arr[i]) > -1) {
+				arr.splice(i,1);
+				i--;
+			}
+		}
+		return arr;
+	},
+	/**
+	 * This method is like pullAll except that it accepts iteratee
+	 * ehich is invoked for each element of array. 
+	 * @param  {Array} arr    [The array to modify]
+	 * @param  {Array} val    [The values to remove]
+	 * @param  {*}     action [The iteratee invoked per element]
+	 * @return {Array}        [Returns array]
+	 */
+	pullAllBy: function(arr, val, action) {
+		action = this._iteratee(action);
+		let nArr = arr.reduce((ary, item) => (ary.push(action(item)), ary), []);
+		let nVal = val.reduce((ary, item) => (ary.push(action(item)), ary), []);
+		for (let i = 0; i < arr.length; i++) {
+			if (nVal.indexOf(nArr[i]) > -1) {
+				arr.splice(i, 1);
+				nArr.splice(i, 1);
+				i--;
+			}
+		}
+		return arr;
+	},
+	/**
+	 * This method is like pullAll except that it accepts 
+	 * which is invoked to compare elements of array to values
+	 * @param  {Array} ary         [The array to modify]
+	 * @param  {Array} val         [The values to remove]
+	 * @param  {*} 	 	comparator [The comparator invoked per element]
+	 * @return {Array}             [Returns array]
+	 */
+	pullAllWith: function(ary , val, comparator) {
+		for (let i = 0; i < ary.length; i++) {
+			for (let j = 0; j < val.length; j++) {
+				if (comparator(ary[i], val[j])) {
+					ary.splice(i, 1);
+					i--;
+					break;
+				}
+			}
+		}
+		return ary;
+	},
+	/**
+	 * Reverses array so that the first element becomes the last,
+	 * the second element becomes the second to last, and so on.
+	 * @param  {Array} arr [The array to modify]
+	 * @return {Array}     [Returns array]
+	 */
+	reverse: function(arr) {
+		let carrier;
+		let helf = arr.length / 2 | 0;
+		for (let i = 0; i < helf; i++) {
+			carrier = arr[i];
+			arr[i] = arr[arr.length - 1 - i];
+			arr[arr.length - 1 - i] = carrier;
 		}
 		return arr;
 	}
