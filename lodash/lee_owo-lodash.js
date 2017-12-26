@@ -121,6 +121,26 @@ var lee_owo = {
 		arr.splice(len, size);
 		return arr;
 	},
+	dropRightWhile: function(arr, action) {
+		let length = arr.length;
+		let fn = this._predicate(action);
+		for (let i = arr.length - 1; i >= 0; i--) {
+			if (!fn(arr[i])) {
+				break;
+			}
+			length--;
+		}
+		return arr.slice(0, length);
+	},
+	dropWhile: function(arr, action) {
+		let fn = this._predicate(action);
+		for (var i = 0; i < arr.length; i++) {
+			if (!fn(arr[i])) {
+				break;
+			}
+		}
+		return arr.slice(i);
+	},
 	/**
 	 * [Flattens array a single level deep]
 	 * @param  {Array} arr [The array to flatten]
@@ -268,6 +288,28 @@ var lee_owo = {
 			return item => item[action];
 		}
 	},
+	_predicate: function(action) {
+		var type = this._typeJudeg(action);
+		if (type === 'Function') {
+			return action;
+		}
+		if (type === 'Array') {
+			return function(value, index, array) {
+				return value[action[0]] === action[1];
+			};
+		}
+		if (type === 'Object') {
+			var that = this;
+			return function(value, index, array) {
+				return that.isMatch(value, action);
+			};
+		}
+		if (type === 'String') {
+			return function(value, index, array) {
+				return value[action];
+			};
+		}
+	},
 	/**
 	 * Judeg type of the argument
 	 * @param  {*} 	a 	  The argument that need to judeged
@@ -398,6 +440,301 @@ var lee_owo = {
 			arr[arr.length - 1 - i] = carrier;
 		}
 		return arr;
+	},
+	/**
+	 * Performs a deep comparison between two values to
+	 * determine if they are equivalent
+	 * @param  {*}  value 		[The value to compare]
+	 * @param  {*}  other 		[The other value compare]
+	 * @return {Boolean}        [Returns true if the values are
+	 *                           equivalent, else false]
+	 */
+	isEqual: function(value, other) {
+		var lodash = this
+		if (lodash.isNaN(value) && lodash.isNaN(other)) return true;
+		let type1 = this._typeJudeg(value);
+		let type2 = this._typeJudeg(other);
+		if (type1 !== type2) return false;
+		if (type1 === 'Number' || type1 === 'String' || type1 === 'Boolean') {
+			if (value === other) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+		// Object and Array
+		let key1 = Object.keys(value);
+		let key2 = Object.keys(other);
+		if (key1.length !== key2.length) return false;
+		for (let i = 0; i < key1.length; i++) {
+			if (typeof value[key1[i]] === 'object') {
+				if (!this.isEqual(value[key1[i]], other[key1[i]])) return false
+			} else {
+				if (value[key1[i]] !== other[key1[i]]) return false;
+			}
+		}
+		return true;
+	},
+	/**
+	 * Checks if value is NaN
+	 * @param  {*}  val 	 [The value to check]
+	 * @return {Boolean}     [Returns true if value is NaN]
+	 */
+	isNaN: function(val) {
+		if (typeof val === "object") {
+			val = val.valueOf();
+		}
+		if (val !== val) {
+			return true;
+		}
+		return false;
+	},
+	isMatch: function(object, source) {
+		let key = Object.keys(source);
+		for (let i = 0; i < key.length; i++) {
+			if (!this.isEqual(source[key[i]], object[key[i]])) {
+				return false;
+			}
+		}
+		return true;
+	},
+	/**
+	 * This method is like find except that it returns the index
+	 * of the first element predicate returns truthy for instead
+	 * of the element itself
+	 * @param  {Array} arr     [The array to inspect]
+	 * @param  {*} action 	   [The function invoked per iteration]
+	 * @param  {Number} action [The index to search from]
+	 * 
+	 * @return {Number}        [Returns the index of the found element,else -1]
+	 */
+	findIndex: function(arr, action, fromIndex = 0) {
+		let fn = this._predicate(action);
+		let result = -1;
+		for (let i = fromIndex; i < arr.length; i++) {
+			if (fn(arr[i])) {
+				result = i;
+				break;
+			}
+		}
+		return result;
+	},
+	findLastIndex: function(arr, action, fromIndex = arr.length - 1) {
+		let fn = this._predicate(action);
+		let result = -1;
+		for (let i = fromIndex; i >= 0; i--) {
+			if (fn(arr[i])) {
+				result = i;
+				break;
+			}
+		}
+		return result;
+	},
+	/**
+	 * This method is like intersection except that it accepts iteratee which
+	 * is invoked for each element of each arrays to generate the criterion by
+	 * which they're compared.
+	 * @param  {Array} arg [description]
+	 * @param  {*} [varname] [description]
+	 * @return {Array}        [description]
+	 */
+	intersectionBy: function(...arg) {
+		let action = arg.pop();
+		let fn = this._iteratee(action);
+		let nArg = [];
+		let result = [];
+		for (let i = 0; i < arg.length; i++) {
+			let arr = arg[i].map(fn);
+			nArg.push(arr);
+		}
+		for (var i = 0; i < arg[0].length; i++) {
+			for (var j = 1; j < arg.length; j++) {
+				if (nArg[j].indexOf(nArg[0][i]) < 0) {
+					break;
+				}
+			}
+			if (j === arg.length) {
+				result.push(arg[0][i]);
+			}
+		}
+		return result;
+	},
+	/**
+	 * This method is like intersection except that it accepts
+	 * comparator which is invoked to compare element of arrays.
+	 * @param  {Array} arg    			[The array to inspect]
+	 * @param  {Function} last of arg   [The comparator invoked per element]
+	 * @return {Array}         			[Returns the new array of intersection values]
+	 */
+	intersectionWith: function(...arg) {
+		let comparator = arg.pop();
+		let result = [];
+		for (let i = 0; i < arg[0].length; i++) {
+			var fn = comparator.bind(this, arg[0][i]);
+			for (var j = 1; j < arg.length; j++) {
+				if(!arg[j].some(fn)) {
+					break;
+				}
+			}
+			if (j === arg.length) {
+				result.push(arg[0][i]);
+			}
+		}
+		return result;
+	},
+	/**
+	 * Uses a binary search to determine the lowest index at which
+	 * value should be inserted into arrau in order to maintain its
+	 * sort order
+	 * @param  {Array} arr  [The sorted array to inspect]
+	 * @param  {*} 	   val  [The value to evaluate]
+	 * @return {Number}     [Returns the index]
+	 */
+	sortedIndex: function(arr, val) {
+		let left = 0;
+		let right = arr.length - 1;
+		while (left <= right) {
+			var mid = (left + right) / 2 | 0;
+			if (arr[mid] < val) {
+				left = mid + 1;
+			} else if (arr[mid - 1] === undefined || val > arr[mid - 1]) {
+				return mid;
+			} else {
+				right = mid - 1;
+			}
+		}
+	},
+	sortedIndexOf: function(arr, val) {
+		return this.sortedIndex(arr, val);
+	},
+	sortedIndexBy: function(arr, val, iteratee) {
+		iteratee = this._iteratee(iteratee);
+		arr = arr.map(iteratee);
+		val = iteratee(val);
+		return this.sortedIndex(arr, val);
+	},
+	/**
+	 * This method is like sortedIndex except that it returns the index at
+	 * which value should be inserted into array in order to maintain its 
+	 * sort order
+	 * @param  {Array}  arr [The sorted array to inspect]
+	 * @param  {*} 		val [The value to evaluate]
+	 * @return {Number}     [Returns the index at which value should be inderted into array]
+	 */
+	sortedLastIndex: function(arr, val) {
+		let left = 0;
+		let right = arr.length - 1;
+		while (left <= right) {
+			var mid = (left + right) / 2 | 0;
+			if (arr[mid] > val) {
+				right = mid - 1;
+			} else if (arr[mid + 1] === undefined || val < arr[mid + 1]) {
+				return mid + 1;
+			} else {
+				left = mid + 1;
+			}
+		}
+	},
+	sortedLastIndexBy: function(arr, val, iteratee) {
+		iteratee = this._iteratee(iteratee);
+		arr = arr.map(iteratee);
+		val = iteratee(val);
+		return this.sortedLastIndex(arr, val);
+	},
+	sortedLastIndexOf: function(arr, val) {
+		return this.sortedLastIndex(arr, val) - 1;
+	},
+	/**
+	 * This method is like uniq except that it's designed and
+	 * optimized for sorted arrays
+	 * @param  {Array} arr [The array to inspect]
+	 * @return {Array}     [Returns the new duplicate free array]
+	 */
+	sortedUniq: function(arr) {
+		let result = [];
+		for (let i = 0; i < arr.length; i++) {
+			if (arr[i] !== arr[i - 1]) {
+				result.push(arr[i]);
+			}
+		}
+		return result;
+	},
+	/**
+	 * This method is like uniqBy except that it's designed and optimized
+	 * for sorted arrays
+	 * @param  {Array}  arr    [The array to inspect]
+	 * @param  {*} 		action [The iteratee invoked per element]
+	 * @return {Array}         [Returns the new duplicate free array]
+	 */
+	sortedUniqBy: function(arr, action) {
+		let result = [];
+		let fn = this._iteratee(action);
+		let map = arr.map(fn);
+		for (let i = 0; i < map.length; i++) {
+			if (map[i] !== map[i - 1]) {
+				result.push(arr[i]);
+			}
+		}
+		return result;
+	},
+	/**
+	 * Gets all but the first element of array
+	 * @param  {Array} arr [The array to query]
+	 * @return {Array}     [Returns the slice of array]
+	 */
+	tail: function(arr) {
+		return arr.slice(1);
+	},
+	/**
+	 * Creates a slice of array with n elements taken from the beginning
+	 * @param  {Array}  arr [The array to query]
+	 * @param  {Number} n   [The number of elements to take]
+	 * @return {Array}      [Returns the slice of array]
+	 */
+	take: function(arr, n = 1) {
+		return arr.slice(0, n);
+	},
+	/**
+	 * Creates a slice of array with n elements taken from the end
+	 * @param  {Array}  arr [The array to query]
+	 * @param  {Number} n   [The number of elements to take]
+	 * @return {Array}      [Returns the slice of array]
+	 */
+	takeRight: function(arr, n = 1) {
+		if (n === 0) return [];
+		return arr.slice(-n);
+	},
+	/**
+	 * Creates a slice of array with elements taken from the end.Elements art 
+	 * taken until predicate returns falsey
+	 * @param  {Array} arr    [The array to query]
+	 * @param  {*}	   action [The function invoked per iteration]
+	 * @return {Array}        [Returns the slice of array]
+	 */
+	takeRightWhile: function(arr, action) {
+		let fn = this._predicate(action);
+		for (var i = arr.length - 1; i >= 0; i--) {
+			if (!fn(arr[i])) {
+				break;
+			}
+		}
+		return arr.slice(i + 1);
+	},
+	/**
+	 * Creates a slice array with elements taken from the beginning.Elements 
+	 * are taken until predicate returns falsey.
+	 * @param  {Array}  arr    [The array to query]
+	 * @param  {*} 		action [The function invoked per iteration]
+	 * @return {Array}         [Returns the slice of array]
+	 */
+	takeWhile: function(arr, action) {
+		let fn = this._predicate(action);
+		for (var i = 0; i <arr.length; i++) {
+			if (!fn(arr[i])) {
+				break;
+			}
+		}
+		return arr.slice(0, i);
 	}
 
 
@@ -409,29 +746,13 @@ var lee_owo = {
 
 
 }
-console.log(`  
-                           .;$$                     
-                ....:;$$$$$$$   $                     
-            ..;;;$$$            $:..                  
-         .:$$$$$$               $$$$$:.               
-       .;$$$$$$$3             $$$$$$$$$;.             
-     .;$$$$$$$$$$      $$$$$$$;$$$$$$$$$$;.           
-    ;$$$$$$$$$$$$$    $$;$$$$$$$$$$$$$$$$$$;          
-   ;$$$$$$$$$$$$$$$$    $$$$$$$$$$$$$$$$$$$$$         
-  $$$$$$$$$$$$$$$$$$$    $$$$$$$$$$$$$$$$$$$$$        
- :$$$$$$$$$$$$$$$$$$$$    $$$$$$$$$$$$$$$$$$$$;       
-.$$$$$$$$$$$$$$$$$$$$$$$   $$$$$$$$$$$$$$$$$$$$.      
-:$$$$$$$$$$$$$$$$$$$$$$$$   $$$$$$$$$$$$$$$$$$$:      
-;$$$$$$$$$$$$$$$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$;      
-;$$$$$$$$$$$$$$$$$$$$$$$$$$$   $$$$$$$$$$$$$$$$;      
-:$$$$$$$$$$$$$$$$$$             $$$$$$$$$$$$$$$:      
-.$$$$$$$$$$$$$$$                 $$$$$$$$$$$$$$.      
- ;$$$$$$$$$$$$$                   $$$$$$$$$$$$;       
-  $$$$$$$$$$$$                     $$$$$$$$$$$        
-   $$$$$$$$$$                      $$$$$$$$$$         
-    ;$$$$$$$$                     $$$$$$$$$;          
-     .$$$$$$$$                   $$$$$$$$$.           
-       .$$$$$$$$               $$$$$$$$$:             
-         .;$$$$$$$$          $$$$$$$$;.               
-            .:$$$$$$$$$$$$$$$$$$$$:.                  
-                ...:;;;;;;;;:...`)
+console.log(`
+   ##     #####    #######    #####    #######  ######## ######## ######## ##        ######## 
+ ####    ##   ##  ##     ##  ##   ##  ##     ## ##       ##       ##       ##    ##  ##       
+   ##   ##     ## ##     ## ##     ## ##     ## ##       ##       ##       ##    ##  ##       
+   ##   ##     ##  ######## ##     ##  ######## #######  #######  #######  ##    ##  #######  
+   ##   ##     ##        ## ##     ##        ##       ##       ##       ## #########       ## 
+   ##    ##   ##  ##     ##  ##   ##  ##     ## ##    ## ##    ## ##    ##       ##  ##    ## 
+ ######   #####    #######    #####    #######   ######   ######   ######        ##   ###### 
+
+	`)
