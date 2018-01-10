@@ -450,10 +450,10 @@ var lee_owo = {
 	 *                           equivalent, else false]
 	 */
 	isEqual: function(value, other) {
-		var lodash = this
-		if (lodash.isNaN(value) && lodash.isNaN(other)) return true;
-		let type1 = this._typeJudeg(value);
-		let type2 = this._typeJudeg(other);
+		var that = this;
+		// if (that.isNaN(value) && that.isNaN(other)) return true;
+		let type1 = that._typeJudeg(value);
+		let type2 = that._typeJudeg(other);
 		if (type1 !== type2) return false;
 		if (type1 === 'Number' || type1 === 'String' || type1 === 'Boolean') {
 			if (value === other) {
@@ -468,7 +468,7 @@ var lee_owo = {
 		if (key1.length !== key2.length) return false;
 		for (let i = 0; i < key1.length; i++) {
 			if (typeof value[key1[i]] === 'object') {
-				if (!this.isEqual(value[key1[i]], other[key1[i]])) return false
+				if (!that.isEqual(value[key1[i]], other[key1[i]])) return false
 			} else {
 				if (value[key1[i]] !== other[key1[i]]) return false;
 			}
@@ -735,6 +735,59 @@ var lee_owo = {
 			}
 		}
 		return arr.slice(0, i);
+	},
+	/**
+	 * Creates an array of unique values,in order,from all
+	 * given arrays.
+	 * @param  {Array} arr    [The Arrays to inspect]
+	 * @return {Array}        [Returns the new array of combined values]
+	 */
+	union: (...arr) => Array.from(new Set([].concat(...arr))),
+	/**
+	 * This method is like union except that it accpets iteratee
+	 * @param  {...[type]} arr [The arrays to inspect]
+	 * @return {Array}         [Returns the new array of combined values]
+	 */
+	unionBy: function(...arr) {
+		var fn = this._iteratee(arr.pop());
+		var nArr = arr.slice();
+		var result = [];
+		var map = new Set();
+		for (let i = 0; i < nArr.length; i++) {
+			nArr[i] = nArr[i].map(fn);
+		}
+		for (let i = 0; i < nArr.length; i++) {
+			nArr[i].reduce(function(result, item, index) {
+				if (!map.has(item)) {
+					result.push(arr[i][index]);
+					map.add(item);
+				}
+				return result;
+			}, result);
+		}
+		return result;
+	},
+	/**
+	 * This method is like union except that it accepts comparator
+	 * @param  {...[type]} arr [The arrays to inspect]
+	 * @return {Array}         [Returns the new array of combined values]
+	 */
+	unionWith: function(...arr) {
+		var comparator = arr.pop();
+		let result = [];
+		for (let i = 0; i < arr.length; i++) {
+			arr[i].forEach(function (item) {
+				for (var i = 0; i < result.length; i++) {
+					if (comparator(result[i], item)) {
+						break;
+					}
+				}
+				if(i === result.length) {
+					result.push(item);
+				}
+			});
+		}
+		return result;
 	}
 
 
