@@ -1,10 +1,10 @@
-var exec = require("child_process").exec;
+const exec = require("child_process").exec;
 
 function start(res) {
 	console.log("Request handler 'start' was called")
 
-	exec("ls -lah", function(error, stdout, stderr) {
-		res.writeHead(200, {"Content-Type" : "text/plain"});
+	exec("ls -lah", (error, stdout, stderr) => {
+		res.writeHead(200, { "Content-Type": "text/plain" });
 		res.write(stdout);
 		res.end();
 	})
@@ -13,7 +13,7 @@ function start(res) {
 function upload(res) {
 	console.log("Request handler 'upload' was called")
 
-	res.writeHead(200, {"Content-Type" : "text/plain"});
+	res.writeHead(200, { "Content-Type": "text/plain" });
 	res.write("hello world");
 	res.end();
 }
