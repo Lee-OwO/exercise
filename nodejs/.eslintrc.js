@@ -51,7 +51,7 @@ module.exports = {
         'array-callback-return': 'error',
 
         // enforce consistent brace style for all control statements
-        curly: ['error', 'multi-line'],
+        'curly': ['error', 'multi-line'],
 
         // enforce consistent newlines before and after dots
         'dot-location': ['error', 'property'],
@@ -126,7 +126,7 @@ module.exports = {
         'wrap-iife': 'error',
 
         // require or disallow “Yoda” conditions
-        yoda: 'error',
+        'yoda': 'error',
 
         /*
          * Variables
@@ -177,7 +177,7 @@ module.exports = {
         'func-call-spacing': 'error',
 
         // enforce consistent indentation
-        indent: ['error', 'tab', {SwitchCase: 1}],
+        'indent': ['error', 'tab', {SwitchCase: 1}],
 
         // enforce the consistent use of either double or single quotes in JSX attributes
         'jsx-quotes': 'error',
@@ -225,7 +225,7 @@ module.exports = {
         'quote-props': ['error', 'as-needed'],
 
         // enforce the consistent use of either backticks, double, or single quotes
-        quotes: ['error', 'double'],
+        'quotes': ['error', 'double'],
 
         // enforce consistent spacing before and after semicolons
         'semi-spacing': 'error',
