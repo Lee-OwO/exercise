@@ -1,0 +1,35 @@
+body
+	display flex
+	justify-content center
+	align-items center
+	min-height 100vh
+	background white
+
+.button
+	position relative
+	background #f72359
+	padding 1em 2em
+	border 1px solid #000
+	margin 0
+	color #fff
+	font-size 1.2em
+	cursor pointer
+	overflow hidden
+	border-radius 100px
+	span
+		position relative
+		// 删除鼠标事件，否则鼠标在span上不会触发button的事件
+		pointer-events: none
+	&::before
+		--size 0
+		content ''
+		position absolute
+		left var(--x)
+		top var(--y)
+		width var(--size)
+		height var(--size)
+		background radial-gradient(circle closest-side, #4405f7, transparent)
+		transform translate(-50%, -50%)
+		transition height .2s ease, width .2s ease
+	&:hover::before
+		--size 300px
