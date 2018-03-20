@@ -1,0 +1,23 @@
+doctype html
+
+html
+  head
+    meta(charset='UTF-8')
+    title 留言
+    style.
+      a {
+        color: red;
+      }
+  body
+    form(action='/' method="post")
+      input(name="username")
+      textarea(name="content")
+      button 提交
+
+    hr
+
+    each msg in message
+      div
+        h4= msg.username
+        div= msg.content
+        time= new Date(msg.time)
